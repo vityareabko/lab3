@@ -5,38 +5,47 @@ var log = require('./libs/log.js')(module);
 var app = express();
 var config = require('./libs/config');
 var ArticleModel = require('./libs/mongoose.js').ArticleModel;
-console.log(ArticleModel)
 // віддаємо фавіконку, також можемо свою віддати(можливо потрібен тіліки шлях)
 app.use(express.favicon());
+
 // виводимо всі запроси в консоль
 app.use(express.logger('dev'));
+
 // стандартний модуль для парсингу JSON в запросах
 app.use(express.bodyParser());
+
 // добавляем put & delete
 app.use(express.methodOverride());
+
 // модуль для простого задания обработчиков путей
 app.use(app.router);
+
 app.use(express.static(path.join(__dirname, 'public')));
+
 app.listen(config.get('port'), function() {
 	log.info('Express server listening on port '+config.get('port'));
 });
 // -------------------------- Обработка ошыбок
+
 app.use(function(req, res, next) {
 	res.status(404);
 	log.debug('Not found URL: %s', req.url);
 	res.send({error: 'Not found'});
 	return;
 });
+
 app.use(function(err, req, res, next) {
 	res.status(err.status || 500);
 	log.error('Internal error (%d): %s', res.statusCode, err.message);
 	res.send({error: err.message});
 	return;
 });
+
 app.get('/ErrorExample', function(req, res, next) {
 	next(new Error('Random error!'));
 });
 // -------------------------- Обработка ошыбок
+
 //---------------------------------------------- api functions: GET, POST, PUT, DELETE
 app.get('/api/articles', function(req, res) {
 	return ArticleModel.find(function(err, articles) {
@@ -49,6 +58,7 @@ app.get('/api/articles', function(req, res) {
 		}
 	});
 });
+
 app.post('/api/articles', function(req, res) {
 	var article = new ArticleModel({
 		title: req.body.title,
@@ -76,6 +86,7 @@ app.post('/api/articles', function(req, res) {
 		}
 	});
 });
+
 app.get('/api/articles/:id', function(req, res) {
 	return ArticleModel.findById(req.params.id, function(err, article) {
 		if (!article) {
@@ -94,6 +105,7 @@ app.get('/api/articles/:id', function(req, res) {
 		}
 	});
 });
+
 app.put('/api/articles/:id', function(req, res) {
 	return ArticleModel.findById(req.params.id, function(err, article) {
 		if (!article) {
@@ -121,6 +133,7 @@ app.put('/api/articles/:id', function(req, res) {
 		});
 	});
 });
+
 app.delete('/api/articles/:id', function(req, res) {
 	return ArticleModel.findById(req.params.id, function (err, article) {
 		if (!article) {

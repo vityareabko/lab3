@@ -33,7 +33,6 @@ app.use(function(err, req, res, next) {
 	res.send({error: err.message});
 	return;
 });
-
 app.get('/ErrorExample', function(req, res, next) {
 	next(new Error('Random error!'));
 });
